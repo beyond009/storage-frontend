@@ -1,18 +1,18 @@
 {
   "canisters": {
-    "raver": {
-      "main": "",
+    "test": {
+      "main": "asset-storage/src/Storage/Bucket.mo",
       "type": "motoko"
     },
     "assets": {
       "dependencies": [
-        "raver"
+        "test"
       ],
       "frontend": {
         "entrypoint": "dist/index.html"
       },
       "source": [
-        "assets/",
+    
         "dist/"
       ],
       "type": "assets"
