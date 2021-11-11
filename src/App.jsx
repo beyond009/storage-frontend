@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import sha256 from "crypto-js";
+import sha256 from "crypto-js/sha256";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Redirect,
@@ -16,7 +16,7 @@ import { isDelegationValid } from "@dfinity/authentication";
 import { idlFactory } from "./declarations/backend/backend.did.js";
 import { DelegationIdentity } from "@dfinity/identity";
 import "./App.css";
-import test from "./declarations/index.js";
+import { test } from "./declarations/test/index.js";
 const App = () => {
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
@@ -29,25 +29,39 @@ const App = () => {
       File.prototype.mozSlice ||
       File.prototype.webkitSlice;
     var currentChunk = 0;
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const result = e.target.result;
-      console.log(result);
-      currentChunk++;
-      if (currentChunk < chunks) {
-        loadNext();
-        console.log(
-          `第${currentChunk}分片解析完成，开始解析${currentChunk + 1}分片`
-        );
-      } else {
-        console.log("解析完成");
-      }
-    };
+    // const reader = new FileReader();
+    // reader.onload = function (e) {
+    //   const result = e.target.result;
+    //   console.log(result);
+    //   currentChunk++;
+    //   if (currentChunk < chunks) {
+    //     loadNext();
+    //     console.log(
+    //       `第${currentChunk}分片解析完成，开始解析${currentChunk + 1}分片`
+    //     );
+    //   } else {
+    //     console.log("解析完成");
+    //   }
+    // };
     const loadNext = async () => {
       let start = currentChunk * chunkSize;
       let end = start + chunkSize > fileSize ? fileSize : start + chunkSize;
       // reader.readAsArrayBuffer(blobSlice.call(file, start, end));
-      console.log(blobSlice.call(file, start, end));
+      let chunk = blobSlice.call(file, start, end);
+      let digest = sha256(chunk);
+      console.log(digest);
+      let tChunk = {
+        digest: digest.words, // SHA256 of chunk
+        data: chunk,
+      };
+
+      console.log(test);
+      if (start == 0) {
+        let re = await test.put({
+          init: { chunk: tChunk, file_extension: { jpg: null } },
+        });
+        console.log(re);
+      }
       currentChunk++;
       if (currentChunk < chunks) {
         console.log(
