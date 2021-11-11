@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-
+import sha256 from "crypto-js";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Redirect,
