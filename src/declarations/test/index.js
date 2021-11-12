@@ -13,9 +13,8 @@ export const canisterId = "ryjl3-tyaaa-aaaaa-aaaba-cai";
  * @return {import("@dfinity/agent").ActorSubclass<import("./test.did.js")._SERVICE>}
  */
 export const createActor = (canisterId, options) => {
-  const agent = new HttpAgent({ ...options?.agentOptions });
+  const agent = new HttpAgent({ host: "127.0.0.1:8000" });
 
-  console.log(process.env);
   // Fetch root key for certificate validation during development
   if (process.env.NODE_ENV !== "production") {
     agent.fetchRootKey().catch((err) => {
