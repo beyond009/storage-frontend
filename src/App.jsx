@@ -83,7 +83,6 @@ const App = () => {
         });
         alert(`上传成功 key${re.ok.key}`);
       }
-
       currentChunk++;
       if (currentChunk < chunks) {
         loadNext();
@@ -130,6 +129,26 @@ const App = () => {
     loadNext();
   }, []);
 
+  const loadImg = async () => {
+    let re = await test.getAssetInfo(
+      "A0F15350E5AAB6C8AC0B882B96328F0646DBCE307EAA3CE2570DB30A824D5242"
+    );
+    console.log(re);
+    let fileSize = Number(re.ok.total_size);
+    let chunkSize = 3145728;
+    let chunks = Math.ceil(fileSize / chunkSize);
+    console.log(fileSize);
+    console.log(chunks);
+    let flag = 0;
+    for (let i = 1; i <= chunks; i++) {
+      let reFile = await test.get({
+        key: "A0F15350E5AAB6C8AC0B882B96328F0646DBCE307EAA3CE2570DB30A824D5242",
+        flag: 0,
+      });
+      console.log(reFile);
+      // flag = flag + chunkSize + 1;
+    }
+  };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
@@ -142,6 +161,7 @@ const App = () => {
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
       </div>
+      <button onClick={loadImg}>load</button>
     </div>
   );
 };

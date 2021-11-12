@@ -32,7 +32,6 @@ type Info =
  record {
    file_extension: FileExtension;
    key: text;
-   need_query_times: nat;
    offset: nat;
    total_size: nat;
  };

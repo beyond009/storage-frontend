@@ -22,7 +22,6 @@ export const idlFactory = ({ IDL }) => {
     'file_extension' : FileExtension,
     'offset' : IDL.Nat,
     'total_size' : IDL.Nat,
-    'need_query_times' : IDL.Nat,
   });
   const Result_1 = IDL.Variant({ 'ok' : Info, 'err' : IDL.Text });
   const Chunk = IDL.Record({
