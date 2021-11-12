@@ -19,6 +19,12 @@ import { DelegationIdentity } from "@dfinity/identity";
 import "./App.css";
 import { test } from "./declarations/test/index.js";
 const App = () => {
+  const [key, setKey] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
+  const handleSetKey = () => {
+    let kkk = document.getElementById("setkey").value;
+    setKey(kkk);
+  };
   const onDrop = useCallback((acceptedFiles) => {
     // Do something with the files
     const file = acceptedFiles[0];
@@ -81,16 +87,12 @@ const App = () => {
           final: { chunk: { digest: digest, data: data }, key: key },
           //keyA0F15350E5AAB6C8AC0B882B96328F0646DBCE307EAA3CE2570DB30A824D524
         });
+        setKey(re.ok.key);
         alert(`上传成功 key${re.ok.key}`);
       }
       currentChunk++;
       if (currentChunk < chunks) {
         loadNext();
-        console.log(
-          `第${currentChunk}分片解析完成，开始解析${currentChunk + 1}分片`
-        );
-      } else {
-        console.log("解析完成");
       }
     };
     const loadNext = async () => {
@@ -130,24 +132,33 @@ const App = () => {
   }, []);
 
   const loadImg = async () => {
-    let re = await test.getAssetInfo(
-      "A0F15350E5AAB6C8AC0B882B96328F0646DBCE307EAA3CE2570DB30A824D5242"
-    );
+    let re = await test.getAssetInfo(key);
     console.log(re);
     let fileSize = Number(re.ok.total_size);
     let chunkSize = 3145728;
     let chunks = Math.ceil(fileSize / chunkSize);
     console.log(fileSize);
     console.log(chunks);
+    let file = [];
     let flag = 0;
     for (let i = 1; i <= chunks; i++) {
       let reFile = await test.get({
-        key: "A0F15350E5AAB6C8AC0B882B96328F0646DBCE307EAA3CE2570DB30A824D5242",
-        flag: 0,
+        key: key,
+        flag: flag,
       });
-      console.log(reFile);
-      // flag = flag + chunkSize + 1;
+      file = file.concat(reFile.ok);
+      flag++;
     }
+    console.log(file);
+    let u8 = new Uint8Array(file);
+    let ab = u8.buffer;
+    console.log(ab);
+    const blob = new Blob([ab], {
+      type: "image/png",
+    });
+    const url = URL.createObjectURL(blob);
+    console.log(url);
+    setImgUrl(url);
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -161,7 +172,11 @@ const App = () => {
           <p>Drag 'n' drop some files here, or click to select files</p>
         )}
       </div>
+      <input id="setkey" />
+      <button onClick={handleSetKey}>set key</button>
+
       <button onClick={loadImg}>load</button>
+      <img src={imgUrl} />
     </div>
   );
 };
