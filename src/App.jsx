@@ -17,7 +17,7 @@ import { isDelegationValid } from "@dfinity/authentication";
 import { idlFactory } from "./declarations/backend/backend.did.js";
 import { DelegationIdentity } from "@dfinity/identity";
 import "./App.css";
-import { test } from "./declarations/test/index.js";
+import { test } from "./index1.js";
 const App = () => {
   const [key, setKey] = useState("");
   const [imgUrl, setImgUrl] = useState("");
@@ -48,7 +48,6 @@ const App = () => {
       // }
       // console.log(blob);
       let result = e.target.result;
-
       let tData = new Uint8Array(result);
       let data = [];
       for (let i = 0; i < tData.length; i++) {
@@ -69,10 +68,13 @@ const App = () => {
             chunk: { digest: digest, data: data },
             file_extension: { jpg: null },
           },
-          // init: null,
         });
         console.log(re);
         key = re.ok.key;
+        if (chunks === 1) {
+          setKey(re.ok.key);
+          console.log(`上传成功`);
+        }
       } else if (currentChunk < chunks - 1) {
         let re = await test.put({
           append: {
@@ -146,6 +148,8 @@ const App = () => {
         key: key,
         flag: flag,
       });
+      console.log(flag);
+      console.log(reFile);
       file = file.concat(reFile.ok);
       flag++;
     }
@@ -154,7 +158,7 @@ const App = () => {
     let ab = u8.buffer;
     console.log(ab);
     const blob = new Blob([ab], {
-      type: "image/png",
+      type: "audio/mp3",
     });
     const url = URL.createObjectURL(blob);
     console.log(url);
@@ -177,6 +181,10 @@ const App = () => {
 
       <button onClick={loadImg}>load</button>
       <img src={imgUrl} />
+      <video width="320" height="240" controls>
+        <source src={imgUrl} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
     </div>
   );
 };

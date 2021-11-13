@@ -32,6 +32,7 @@ export interface Info {
   'file_extension' : FileExtension,
   'offset' : bigint,
   'total_size' : bigint,
+  'need_query_times' : bigint,
 }
 export type PUT = { 'final' : { 'key' : string, 'chunk' : Chunk } } |
   { 'init' : { 'file_extension' : FileExtension, 'chunk' : Chunk } } |
