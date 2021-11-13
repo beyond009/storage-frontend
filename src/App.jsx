@@ -18,9 +18,64 @@ import { idlFactory } from "./declarations/backend/backend.did.js";
 import { DelegationIdentity } from "@dfinity/identity";
 import "./App.css";
 import { test } from "./index1.js";
+const getReverseFileExtension = (type) => {
+  switch (Object.keys(type)[0]) {
+    case "jpeg":
+      return "image/jpeg";
+    case "gif":
+      return "image/gif";
+    case "jpg":
+      return "image/jpg";
+    case "png":
+      return "image/png";
+    case "svg":
+      return "image/svg";
+    case "avi":
+      return "video/avi";
+    case "mp4":
+      return "video/mp4";
+    case "aac":
+      return "video/aac";
+    case "wav":
+      return "audio/wav";
+    case "mp3":
+      return "audio/mp3";
+    default:
+      return "";
+  }
+};
+
+const getFileExtension = (type) => {
+  switch (type) {
+    case "image/jpeg":
+      return { jpeg: null };
+    case "image/gif":
+      return { gif: null };
+    case "image/jpg":
+      return { jpg: null };
+    case "image/png":
+      return { png: null };
+    case "image/svg":
+      return { svg: null };
+    case "video/avi":
+      return { avi: null };
+    case "video/aac":
+      return { aac: null };
+    case "video/mp4":
+      return { mp4: null };
+    case "audio/wav":
+      return { wav: null };
+    case "audio/mp3":
+      return { mp3: null };
+    default:
+      return null;
+  }
+};
+
 const App = () => {
   const [key, setKey] = useState("");
   const [imgUrl, setImgUrl] = useState("");
+
   const handleSetKey = () => {
     let kkk = document.getElementById("setkey").value;
     setKey(kkk);
@@ -37,8 +92,9 @@ const App = () => {
       File.prototype.webkitSlice;
     var currentChunk = 0;
     var key = null;
+    console.log(file.type);
     const reader = new FileReader();
-
+    var file_extension = getFileExtension(file.type);
     reader.onload = async function (e) {
       // let blob = null;
       // if (typeof e.target.result === "object") {
@@ -62,11 +118,13 @@ const App = () => {
       }
       console.log(data);
       console.log(digest);
+
+      console.log(file_extension);
       if (currentChunk === 0) {
         let re = await test.put({
           init: {
             chunk: { digest: digest, data: data },
-            file_extension: { jpg: null },
+            file_extension: file_extension,
           },
         });
         console.log(re);
@@ -136,10 +194,8 @@ const App = () => {
   const loadImg = async () => {
     let re = await test.getAssetInfo(key);
     console.log(re);
-    let fileSize = Number(re.ok.total_size);
-    let chunkSize = 3145728;
-    let chunks = Math.ceil(fileSize / chunkSize);
-    console.log(fileSize);
+
+    let chunks = Number(re.ok.need_query_times);
     console.log(chunks);
     let file = [];
     let flag = 0;
@@ -150,16 +206,21 @@ const App = () => {
       });
       console.log(flag);
       console.log(reFile);
-      file = file.concat(reFile.ok);
+      file.push(new Uint8Array(reFile.ok).buffer);
       flag++;
     }
     console.log(file);
-    let u8 = new Uint8Array(file);
-    let ab = u8.buffer;
-    console.log(ab);
-    const blob = new Blob([ab], {
-      type: "audio/mp3",
+    // let u8 = new Uint8Array(file);
+    // let ab = u8.buffer;
+    // console.log(Object.keys(re.ok)[1]);
+    let file_type = getReverseFileExtension(re.ok.file_extension);
+    // console.log(ab);
+    console.log(file_type);
+    const blob = new Blob(file, {
+      type: file_type,
     });
+
+    console.log(blob);
     const url = URL.createObjectURL(blob);
     console.log(url);
     setImgUrl(url);
