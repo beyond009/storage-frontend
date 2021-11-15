@@ -205,6 +205,7 @@ const App = () => {
         flag: flag,
       });
       console.log(flag);
+
       console.log(reFile);
       file.push(new Uint8Array(reFile.ok).buffer);
       flag++;
@@ -220,6 +221,7 @@ const App = () => {
       type: file_type,
     });
 
+    console.log(sha256(blob).words);
     console.log(blob);
     const url = URL.createObjectURL(blob);
     console.log(url);

@@ -4,7 +4,7 @@ import { Actor, HttpAgent } from "@dfinity/agent";
 import { idlFactory } from "./declarations/test/test.did.js";
 export { idlFactory } from "./declarations/test/test.did.js";
 // CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+export const canisterId = "wd6xb-jyaaa-aaaah-qchfq-cai";
 
 /**
  *
@@ -13,7 +13,7 @@ export const canisterId = "ryjl3-tyaaa-aaaaa-aaaba-cai";
  * @return {import("@dfinity/agent").ActorSubclass<import("./test.did.js")._SERVICE>}
  */
 export const createActor = (canisterId, options) => {
-  const agent = new HttpAgent({ host: "127.0.0.1:8000" });
+  const agent = new HttpAgent({ host: "ic0.app" });
 
   // Fetch root key for certificate validation during development
   if (process.env.NODE_ENV !== "production") {
