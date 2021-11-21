@@ -141,7 +141,10 @@ const App = () => {
         );
         if (currentChunk === chunks - 1) {
           console.log(chunkPromises);
-          Promise.all(chunkPromises).then((re) => console.log(chunkPromises));
+          Promise.all(chunkPromises).then((re) => {
+            console.log(re);
+            setKey(re[chunks - 2].ok.key);
+          });
         } else {
           currentChunk++;
           loadNext();
@@ -159,35 +162,30 @@ const App = () => {
   const loadImg = async () => {
     let re = await test.getAssetExt(key);
     console.log(re);
-
     let chunks = Number(re.ok.need_query_times);
     console.log(chunks);
     let file = [];
-    let flag = 0;
-    for (let i = 1; i <= chunks; i++) {
+    for (let i = 0; i < chunks; i++) {
       let reFile = await test.get({
         key: key,
-        flag: flag,
+        flag: i,
       });
-      console.log(flag);
 
       console.log(reFile);
-      file.push(new Uint8Array(reFile.ok).buffer);
-      flag++;
+      for (let i = 0; i < reFile.ok.length; i++)
+        file.push(new Uint8Array(reFile.ok[i]).buffer);
     }
     console.log(file);
     // let u8 = new Uint8Array(file);
     // let ab = u8.buffer;
     // console.log(Object.keys(re.ok)[1]);
     let file_type = getReverseFileExtension(re.ok.file_extension);
-    // console.log(ab);
-    console.log(file_type);
+
     const blob = new Blob(file, {
       type: file_type,
     });
 
-    console.log(sha256(blob).words);
-    console.log(blob);
+    // console.log(sha256(blob).words);
     const url = URL.createObjectURL(blob);
     console.log(url);
     setImgUrl(url);
