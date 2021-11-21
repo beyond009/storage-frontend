@@ -7,10 +7,13 @@ export interface AssetExt {
   'need_query_times' : bigint,
 }
 export interface Bucket {
+  'avalmemory' : () => Promise<bigint>,
+  'balance' : () => Promise<bigint>,
   'canisterState' : () => Promise<string>,
   'get' : (arg_0: GET) => Promise<Result_1>,
   'getAssetExt' : (arg_0: string) => Promise<Result>,
   'put' : (arg_0: PUT) => Promise<Result>,
+  'rmemory' : () => Promise<bigint>,
   'setBufferCanister' : (arg_0: string) => Promise<undefined>,
   'wallet_receive' : () => Promise<bigint>,
 }

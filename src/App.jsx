@@ -170,21 +170,22 @@ const App = () => {
         key: key,
         flag: i,
       });
-
+      console.log(i);
       console.log(reFile);
-      for (let i = 0; i < reFile.ok.length; i++)
-        file.push(new Uint8Array(reFile.ok[i]).buffer);
+      let tmp = reFile.ok[0];
+      for (let i = 1; i < reFile.ok.length; i++) tmp = tmp.concat(reFile.ok[i]);
+      file = file.concat(tmp);
     }
-    console.log(file);
-    // let u8 = new Uint8Array(file);
-    // let ab = u8.buffer;
-    // console.log(Object.keys(re.ok)[1]);
-    let file_type = getReverseFileExtension(re.ok.file_extension);
 
-    const blob = new Blob(file, {
+    console.log(file);
+    let ff = new Uint8Array(file).buffer;
+    console.log(ff);
+    let file_type = getReverseFileExtension(re.ok.file_extension);
+    const blob = new Blob([ff], {
       type: file_type,
     });
 
+    console.log(blob);
     // console.log(sha256(blob).words);
     const url = URL.createObjectURL(blob);
     console.log(url);
