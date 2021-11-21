@@ -9,10 +9,9 @@
         "test"
       ],
       "frontend": {
-        "entrypoint": "dist/index.html"
+        "entrypoint": "src/index.html"
       },
       "source": [
-    
         "dist/"
       ],
       "type": "assets"

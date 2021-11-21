@@ -1,0 +1,69 @@
+type Result_1 = 
+ variant {
+   err: text;
+   ok: vec blob;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: AssetExt;
+ };
+type PUT = 
+ variant {
+   append: record {
+             chunk: Chunk;
+             key: text;
+             order: nat;
+           };
+   init:
+    record {
+      chunk: Chunk;
+      chunk_number: nat;
+      file_extension: FileExtension;
+    };
+ };
+type GET = 
+ record {
+   flag: nat;
+   key: text;
+ };
+type FileExtension = 
+ variant {
+   aac;
+   avi;
+   doc;
+   docs;
+   gif;
+   jpeg;
+   jpg;
+   mp3;
+   mp4;
+   png;
+   ppt;
+   svg;
+   txt;
+   wav;
+ };
+type Chunk = 
+ record {
+   data: blob;
+   digest: vec nat8;
+ };
+type Bucket = 
+ service {
+   canisterState: () -> (text) query;
+   get: (GET) -> (Result_1) query;
+   getAssetExt: (text) -> (Result) query;
+   put: (PUT) -> (Result);
+   setBufferCanister: (text) -> ();
+   wallet_receive: () -> (nat);
+ };
+type AssetExt = 
+ record {
+   bucket_id: principal;
+   file_extension: FileExtension;
+   key: text;
+   need_query_times: nat;
+   total_size: nat;
+ };
+service : () -> Bucket

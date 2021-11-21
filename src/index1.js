@@ -1,10 +1,10 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 
 // Imports and re-exports candid interface
-import { idlFactory } from "./declarations/test/test.did.js";
-export { idlFactory } from "./declarations/test/test.did.js";
+import { idlFactory } from "./test/test.did.js";
+export { idlFactory } from "./test/test.did.js";
 // CANISTER_ID is replaced by webpack based on node environment
-export const canisterId = "wd6xb-jyaaa-aaaah-qchfq-cai";
+export const canisterId = "rno2w-sqaaa-aaaaa-aaacq-cai";
 
 /**
  *
@@ -13,7 +13,7 @@ export const canisterId = "wd6xb-jyaaa-aaaah-qchfq-cai";
  * @return {import("@dfinity/agent").ActorSubclass<import("./test.did.js")._SERVICE>}
  */
 export const createActor = (canisterId, options) => {
-  const agent = new HttpAgent({ host: "ic0.app" });
+  const agent = new HttpAgent({ host: "127.0.0.1:8000" });
 
   // Fetch root key for certificate validation during development
   if (process.env.NODE_ENV !== "production") {

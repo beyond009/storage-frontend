@@ -91,18 +91,11 @@ const App = () => {
       File.prototype.mozSlice ||
       File.prototype.webkitSlice;
     var currentChunk = 0;
-    var key = null;
-    console.log(file.type);
+    var tKey = "";
+    const chunkPromises = [];
     const reader = new FileReader();
     var file_extension = getFileExtension(file.type);
-    reader.onload = async function (e) {
-      // let blob = null;
-      // if (typeof e.target.result === "object") {
-      //   blob = new Blob([e.target.result]);
-      // } else {
-      //   blob = e.target.result;
-      // }
-      // console.log(blob);
+    reader.onload = function (e) {
       let result = e.target.result;
       let tData = new Uint8Array(result);
       let data = [];
@@ -116,83 +109,55 @@ const App = () => {
       for (let i = 0; i < ttmp.length; i++) {
         digest.push(ttmp[i]);
       }
-      console.log(data);
-      console.log(digest);
-
-      console.log(file_extension);
       if (currentChunk === 0) {
-        let re = await test.put({
-          init: {
-            chunk: { digest: digest, data: data },
-            file_extension: file_extension,
-          },
-        });
-        console.log(re);
-        key = re.ok.key;
-        if (chunks === 1) {
-          setKey(re.ok.key);
-          console.log(`上传成功`);
+        test
+          .put({
+            init: {
+              chunk: { digest: digest, data: data },
+              chunk_number: chunks,
+              file_extension: file_extension,
+            },
+          })
+          .then((re) => {
+            tKey = re.ok.key;
+            if (chunks === 1) {
+              setKey(re.ok.key);
+              console.log(`上传成功`);
+            } else {
+              currentChunk++;
+              loadNext();
+            }
+          });
+      } else if (currentChunk < chunks) {
+        console.log(currentChunk, chunks);
+        chunkPromises.push(
+          test.put({
+            append: {
+              chunk: { digest: digest, data: data },
+              order: currentChunk,
+              key: tKey,
+            },
+          })
+        );
+        if (currentChunk === chunks - 1) {
+          console.log(chunkPromises);
+          Promise.all(chunkPromises).then((re) => console.log(chunkPromises));
+        } else {
+          currentChunk++;
+          loadNext();
         }
-      } else if (currentChunk < chunks - 1) {
-        let re = await test.put({
-          append: {
-            chunk: { digest: digest, data: data },
-            key: key,
-          },
-        });
-        console.log(re);
-        key = re.ok.key;
-      } else {
-        let re = await test.put({
-          final: { chunk: { digest: digest, data: data }, key: key },
-          //keyA0F15350E5AAB6C8AC0B882B96328F0646DBCE307EAA3CE2570DB30A824D524
-        });
-        setKey(re.ok.key);
-        alert(`上传成功 key${re.ok.key}`);
-      }
-      currentChunk++;
-      if (currentChunk < chunks) {
-        loadNext();
       }
     };
-    const loadNext = async () => {
+    const loadNext = () => {
       var start = currentChunk * chunkSize;
       var end = start + chunkSize > fileSize ? fileSize : start + chunkSize;
       reader.readAsArrayBuffer(blobSlice.call(file, start, end));
-      // let chunk = blobSlice.call(file, start, end);
-      // let digest = sha256(chunk);
-      // console.log(digest);
-      // let tChunk = {
-      //   digest: digest.words, // SHA256 of chunk
-      //   data: chunk,
-      // };
-
-      // console.log(test);
-      // if (start == 0) {
-      //   let re = await test.put({
-      //     init: {
-      //       chunk: { digest: [], data: [] },
-      //       file_extension: { jpg: null },
-      //     },
-      //     // init: null,
-      //   });
-      //   console.log(re);
-      // }
-      // currentChunk++;
-      // if (currentChunk < chunks) {
-      //   console.log(
-      //     `第${currentChunk}分片解析完成，开始解析${currentChunk + 1}分片`
-      //   );
-      //   loadNext();
-      // } else {
-      //   console.log("解析完成");
-      // }
     };
     loadNext();
   }, []);
 
   const loadImg = async () => {
-    let re = await test.getAssetInfo(key);
+    let re = await test.getAssetExt(key);
     console.log(re);
 
     let chunks = Number(re.ok.need_query_times);
